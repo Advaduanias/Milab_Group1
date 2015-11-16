@@ -174,10 +174,10 @@
     </TableLayout>
 
     <ToggleButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textOff="Start Capturing"
-        android:textOn="Stop Capturing"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:textOff="Start"
+        android:textOn="Stop"
         android:background="@drawable/btn_togle"
         android:id="@+id/capture"
         android:singleLine="true"
@@ -204,20 +204,16 @@
         android:text="0000"
         android:id="@+id/listSize"
         android:layout_alignTop="@+id/textView"
-        android:layout_alignRight="@+id/reset"
-        android:layout_alignEnd="@+id/reset" />
+        android:layout_centerHorizontal="true" />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
         android:text="Reset"
         android:id="@+id/reset"
         android:layout_column="0"
-        android:layout_toRightOf="@+id/capture"
-        android:layout_marginLeft="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_alignTop="@+id/capture"
-        android:layout_above="@+id/textView" />
+        android:layout_below="@+id/tableLayout1"
+        android:layout_centerHorizontal="true" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
@@ -264,5 +260,25 @@
         android:layout_above="@+id/chart"
         android:layout_alignLeft="@+id/durationText"
         android:layout_alignStart="@+id/durationText" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Arm"
+        android:id="@+id/arm_switch"
+        android:layout_alignTop="@+id/listSize"
+        android:layout_toRightOf="@+id/reset"
+        android:layout_toEndOf="@+id/reset" />
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="Settings"
+        android:id="@+id/settings_button"
+        android:layout_below="@+id/tableLayout1"
+        android:layout_alignLeft="@+id/arm_switch"
+        android:layout_alignStart="@+id/arm_switch"
+        android:layout_marginLeft="18dp"
+        android:layout_marginStart="18dp" />
 
 </RelativeLayout>

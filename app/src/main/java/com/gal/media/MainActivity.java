@@ -1,18 +1,23 @@
 package com.gal.media;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -22,6 +27,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -30,7 +36,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private TextView xAcc, yAcc, zAcc, xMag, yMag, zMag, xOrient, yOrient, zOrient, listSize, durationText, sampleRateText;
     private ToggleButton captureButton;
-    private Button reset;
+    private Button reset, settingsButton;
+    private Switch armSwitch;
 
     private float[] acceleration = new float[3];
     private float[] magnet = null;
@@ -69,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         reset = (Button) findViewById(R.id.reset);
         chart = (LineChart) findViewById(R.id.chart);
 
+        settingsButton = (Button) findViewById(R.id.settings_button);
+        armSwitch = (Switch) findViewById(R.id.arm_switch);
+
 
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -94,10 +104,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     setMisc();
 
-                    setUpChart();
+                    setUpChart(chart, capturedData);
 
 
                 }
+            }
+        });
+        //Arm Switch Listener
+        armSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+
+                    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                    int rate =  sp.getInt("sensorRate", 3);
+                    sensorManager.registerListener(MainActivity.this, acc, rate);
+                    sensorManager.registerListener(MainActivity.this, mag, rate);
+                    settingsButton.setClickable(false);
+
+                } else {
+
+                    sensorManager.unregisterListener(MainActivity.this);
+                    settingsButton.setClickable(true);
+                }
+
+
             }
         });
 
@@ -109,7 +143,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 capturedData.clear();
                 listSize.setText(String.valueOf(capturedData.size()));
                 chart.clearValues();
+                durationText.setText("");
+                sampleRateText.setText("");
 
+            }
+        });
+
+        settingsButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                //Intent i = new Intent(MainActivity.this, Settings.class);
+                startActivity(new Intent(MainActivity.this, Settings.class));
 
             }
         });
@@ -120,17 +166,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
 
-
-        sensorManager.registerListener(this, acc, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, mag, SensorManager.SENSOR_DELAY_NORMAL);
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        sensorManager.unregisterListener(this);
+        armSwitch.setChecked(false);
+
     }
 
     @Override
@@ -232,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    private void setUpChart() {
+    public static void setUpChart(Chart chart, List<float[]> capturedData) {
         //Creates a list of entries and fill it
 
         //LineDaya << LineDataSet << Entries
@@ -254,11 +297,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         LineDataSet yDataSet = new LineDataSet(yEntries, "Y Values");
         LineDataSet zDataSet = new LineDataSet(zEntries, "Z Values");
 
+        //Plot aginst the Y axis
         xDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         yDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
         zDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
 
-
+        //Sets up colors for the circles and the Legend
         int[] colors = {Color.BLUE, Color.GREEN, Color.RED};
 
         xDataSet.setCircleColor(colors[0]);
@@ -274,16 +318,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         //Adds labels to to the X axis
         ArrayList<String> xVals = new ArrayList<String>();
-
         for (int i = 0; i < index; i++) {
             xVals.add(String.valueOf(i));
         }
 
+
         LineData data = new LineData(xVals, dataSetsList);
+
         chart.setData(data);
-
         String[] labels = {"X", "Y", "Z"};
-
         chart.getLegend().setCustom(colors, labels);
         chart.invalidate();
 
