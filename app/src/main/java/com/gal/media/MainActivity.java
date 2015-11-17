@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private TextView xAcc, yAcc, zAcc, xMag, yMag, zMag, xOrient, yOrient, zOrient, listSize, durationText, sampleRateText;
     private ToggleButton captureButton;
-    private Button reset, settingsButton;
+    private Button reset, settingsButton, compareButton;
     private Switch armSwitch;
 
     private float[] acceleration = new float[3];
@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         chart = (LineChart) findViewById(R.id.chart);
 
         settingsButton = (Button) findViewById(R.id.settings_button);
+        compareButton = (Button) findViewById(R.id.compare_button);
         armSwitch = (Switch) findViewById(R.id.arm_switch);
 
 
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mag = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
 
-
+        //Capture Button
         captureButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
@@ -101,11 +102,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     listSize.setText(String.valueOf(capturedData.size()));
                     reset.setClickable(true);
-
                     setMisc();
-
-                    setUpChart(chart, capturedData);
-
+                    setUpChart(chart, capturedData, "Capture");
+                    CustomList.sessionHolder.add(new LinkedList<float[]>(capturedData));
 
                 }
             }
@@ -124,11 +123,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     sensorManager.registerListener(MainActivity.this, acc, rate);
                     sensorManager.registerListener(MainActivity.this, mag, rate);
                     settingsButton.setClickable(false);
+                    captureButton.setEnabled(true);
 
                 } else {
 
                     sensorManager.unregisterListener(MainActivity.this);
                     settingsButton.setClickable(true);
+                    captureButton.setEnabled(false);
                 }
 
 
@@ -157,6 +158,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 //Intent i = new Intent(MainActivity.this, Settings.class);
                 startActivity(new Intent(MainActivity.this, Settings.class));
 
+            }
+        });
+
+        compareButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+                startActivity(new Intent(MainActivity.this, CompareActivity.class));
             }
         });
 
@@ -275,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
-    public static void setUpChart(Chart chart, List<float[]> capturedData) {
+    public static void setUpChart(Chart chart, List<float[]> capturedData, String description) {
         //Creates a list of entries and fill it
 
         //LineDaya << LineDataSet << Entries
@@ -328,6 +338,45 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         chart.setData(data);
         String[] labels = {"X", "Y", "Z"};
         chart.getLegend().setCustom(colors, labels);
+        chart.setDescription(description);
+        chart.invalidate();
+
+    }
+
+    public static void setUpChartDotProduct(Chart chart, List<Float> capturedData, String description) {
+        //Creates a list of entries and fill it
+
+        //LineDaya << LineDataSet << Entries
+        ArrayList<Entry> xEntries = new ArrayList<Entry>();
+        int index = 0;
+
+        for (Float f : capturedData) {
+
+            xEntries.add(new Entry(f, index));
+            index++;
+        }
+
+        //Creates a data set which consist of "xEntries" and a label
+        LineDataSet xDataSet = new LineDataSet(xEntries, "X Values");
+
+        //Plot aginst the Y axis
+        xDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+
+        //Creates a list of DataSets
+        ArrayList<LineDataSet> dataSetsList = new ArrayList<LineDataSet>();
+        dataSetsList.add(xDataSet);
+
+        //Adds labels to to the X axis
+        ArrayList<String> xVals = new ArrayList<String>();
+        for (int i = 0; i < index; i++) {
+            xVals.add(String.valueOf(i));
+        }
+
+        LineData data = new LineData(xVals, dataSetsList);
+
+        chart.setData(data);
+        chart.setDescription(description);
         chart.invalidate();
 
     }

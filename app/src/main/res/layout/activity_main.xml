@@ -174,7 +174,7 @@
     </TableLayout>
 
     <ToggleButton
-        android:layout_width="100dp"
+        android:layout_width="70dp"
         android:layout_height="40dp"
         android:textOff="Start"
         android:textOn="Stop"
@@ -207,13 +207,14 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-        android:layout_width="100dp"
+        android:layout_width="70dp"
         android:layout_height="50dp"
         android:text="Reset"
         android:id="@+id/reset"
         android:layout_column="0"
-        android:layout_below="@+id/tableLayout1"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignTop="@+id/settings_button"
+        android:layout_toRightOf="@+id/sampleRate"
+        android:layout_toEndOf="@+id/sampleRate" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
@@ -266,19 +267,28 @@
         android:layout_height="wrap_content"
         android:text="Arm"
         android:id="@+id/arm_switch"
+        android:layout_marginLeft="45dp"
+        android:layout_marginStart="45dp"
         android:layout_alignTop="@+id/listSize"
-        android:layout_toRightOf="@+id/reset"
-        android:layout_toEndOf="@+id/reset" />
+        android:layout_alignLeft="@+id/settings_button"
+        android:layout_alignStart="@+id/settings_button" />
 
     <Button
-        android:layout_width="100dp"
+        android:layout_width="70dp"
         android:layout_height="50dp"
-        android:text="Settings"
+        android:text="Pref"
         android:id="@+id/settings_button"
         android:layout_below="@+id/tableLayout1"
-        android:layout_alignLeft="@+id/arm_switch"
-        android:layout_alignStart="@+id/arm_switch"
-        android:layout_marginLeft="18dp"
-        android:layout_marginStart="18dp" />
+        android:layout_toRightOf="@+id/listSize"
+        android:layout_toEndOf="@+id/listSize" />
+
+    <Button
+        android:layout_width="70dp"
+        android:layout_height="50dp"
+        android:text="Comp"
+        android:id="@+id/compare_button"
+        android:layout_alignTop="@+id/settings_button"
+        android:layout_alignRight="@+id/tableLayout1"
+        android:layout_alignEnd="@+id/tableLayout1" />
 
 </RelativeLayout>
