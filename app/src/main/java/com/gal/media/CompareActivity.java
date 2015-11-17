@@ -49,7 +49,7 @@ public class CompareActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Float> list) {
 
-            MainActivity.setUpChartDotProduct(chartDotProduct, list, "Dot Product");
+            MainActivity.setUpChartDotProduct(chartDotProduct, list, "Angle");
         }
     }
 

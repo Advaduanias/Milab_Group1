@@ -54,7 +54,7 @@ public class CustomList<E> extends LinkedList<E> {
         float normU = (float) Math.sqrt(calcDotProduct(u, u));
         float dotProductVU = calcDotProduct(v, u);
 
-        return (dotProductVU / (normV * normU));
+        return (float) Math.toDegrees(Math.acos(dotProductVU / (normV * normU)));
     }
 
     public float calcDotProduct (float[] v, float[] u) {
